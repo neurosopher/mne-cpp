@@ -147,7 +147,6 @@ RealTimeMultiSampleArrayWidget::RealTimeMultiSampleArrayWidget(QSharedPointer<Ne
     addDisplayAction(m_pActionChScaling);
     m_pActionChScaling->setVisible(false);
 
-
     m_pActionProjection = new QAction(QIcon(":/images/iconSSP.png"), tr("Shows the SSP widget (F12)"),this);
     m_pActionProjection->setShortcut(tr("F12"));
     m_pActionProjection->setStatusTip(tr("Shows the SSP widget (F12)"));

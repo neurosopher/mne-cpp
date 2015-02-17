@@ -214,6 +214,8 @@ protected:
     virtual void run();
 
 private:
+    bool readHeader();
+
     //=========================================================================================================
     /**
     * Initialises the output connector.
@@ -250,6 +252,7 @@ private:
 
     bool                            m_bIsRunning;           /**< Whether FiffSimulator is running.*/
 
+    QString                 m_sFiffHeader;  /**< Fiff header information */
 };
 
 } // NAMESPACE
