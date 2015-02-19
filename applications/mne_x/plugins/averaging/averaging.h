@@ -220,6 +220,7 @@ private:
 
     QAction* m_pActionShowAdjustment;
 
+    MatrixXd proj;              /**< SSP operator to apply to the averaging data. */
 
 #ifdef DEBUG_AVERAGING
     //

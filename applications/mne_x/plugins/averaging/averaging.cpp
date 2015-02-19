@@ -317,6 +317,17 @@ void Averaging::update(XMEASLIB::NewMeasurement::SPtr pMeasurement)
         if(!m_pFiffInfo)
         {
             m_pFiffInfo = pRTMSA->info();
+
+            if (m_pFiffInfo->projs.size() == 0)
+                printf("No projector specified for the average data\n");
+            else
+            {
+                //
+                //   Create the projector
+                //
+                fiff_int_t nproj = m_pFiffInfo->make_projector(this->proj);
+            }
+
             emit fiffInfoAvailable();
 
 #ifdef DEBUG_AVERAGING
@@ -334,9 +345,19 @@ void Averaging::update(XMEASLIB::NewMeasurement::SPtr pMeasurement)
 
         if(m_bProcessData)
         {
+            bool projAvailable = true;
+
+            if (this->proj.size() == 0)
+                projAvailable = false;
+
             for(qint32 i = 0; i < pRTMSA->getMultiSampleArray().size(); ++i)
             {
-                MatrixXd t_mat = pRTMSA->getMultiSampleArray()[i];
+                MatrixXd t_mat;
+
+                if(projAvailable)
+                    t_mat = this->proj * pRTMSA->getMultiSampleArray()[i];
+                else
+                    t_mat = pRTMSA->getMultiSampleArray()[i];
 
 #ifdef DEBUG_AVERAGING
                 qsrand(time(NULL)+m_iTestCount);
@@ -358,6 +379,7 @@ void Averaging::update(XMEASLIB::NewMeasurement::SPtr pMeasurement)
                 }
                 ++m_iTestCount;
 #endif
+
                 m_pAveragingBuffer->push(&t_mat);
             }
         }

@@ -418,6 +418,12 @@ bool Neuromag::readHeader()
 
     m_pFiffInfo->projs = q_ListProj;
 
+    //
+    //   Activate the projection items
+    //
+    for (qint32 k = 0; k < m_pFiffInfo->projs.size(); ++k)
+        m_pFiffInfo->projs[k].active = true;
+
     //garbage collecting
     t_pStream->device()->close();
 
