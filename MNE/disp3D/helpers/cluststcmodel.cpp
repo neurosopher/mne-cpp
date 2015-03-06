@@ -143,6 +143,7 @@ QVariant ClustStcModel::data(const QModelIndex &index, int role) const
                 {
                     QList<qint32> selVec;
                     QVariant v;
+
                     if(row < m_iLHSize)
                         selVec = m_qMapLabelIdChannelLH.values(m_qListLabels[row].label_id);
                     else
@@ -156,6 +157,7 @@ QVariant ClustStcModel::data(const QModelIndex &index, int role) const
                     else // relative stc data
                         for(qint32 i = 0; i < selVec.size(); ++i)
                             valVec(i) = m_vecCurRelStc(selVec[i]);
+
                     v.setValue(valVec);
                     return v;//m_vecCurStc(row));
                 }
@@ -232,7 +234,9 @@ QVariant ClustStcModel::headerData(int section, Qt::Orientation orientation, int
 
 void ClustStcModel::addData(const MNESourceEstimate &stc)
 {
-    if(!m_bModelInit || stc.isEmpty())
+    qDebug() << "addData sourceEstimate" << stc.data.rows() << " x " << stc.data.cols();
+
+    if(!m_bModelInit || stc.isEmpty() || stc.data.rows() == 0 || stc.data.cols() == 0)
         return;
 
     if(m_vertLabelIds.size() != stc.data.rows())
@@ -394,6 +398,8 @@ void ClustStcModel::setNormalization(qint32 fraction)
 
 void ClustStcModel::setStcSample(const VectorXd &sample)
 {
+//    qDebug() << "setStcSample size" << sample.size();
+
     m_vecCurStc = sample;
 
     m_vecCurRelStc = sample/m_dStcNorm;

@@ -153,6 +153,19 @@ void MNE::calcFiffInfo()
     {
         qDebug() << "Fiff Infos available";
 
+//        qDebug() << "m_pFiffInfoForward->ch_names" << m_pFiffInfoForward->ch_names;
+//        qDebug() << "m_pFiffInfoEvoked->ch_names" << m_pFiffInfoEvoked->ch_names;
+
+        // ########### ToDo: Dirty Hack to align channel names ############
+        QStringList new_ch_names;
+        for(qint32 x = 0; x < 306; ++x)
+        {
+            m_pFiffInfoForward->chs[x].ch_name = m_pFiffInfoEvoked->chs[x].ch_name;
+            new_ch_names << m_pFiffInfoEvoked->chs[x].ch_name;
+        }
+        m_pFiffInfoForward->ch_names = new_ch_names;
+        // ############ Dirty Hack End ############
+
         QStringList tmp_pick_ch_names;
         foreach (const QString &ch, m_pFiffInfoForward->ch_names)
         {
@@ -170,7 +183,11 @@ void MNE::calcFiffInfo()
 
         RowVectorXi sel = m_pFiffInfoEvoked->pick_channels(m_qListPickChannels);
 
+//        qDebug() << "m_qListPickChannels" << m_qListPickChannels;
+
         m_pFiffInfo = QSharedPointer<FiffInfo>(new FiffInfo(m_pFiffInfoEvoked->pick_info(sel)));
+
+//        qDebug() << "m_pFiffInfo" << m_pFiffInfo->ch_names;
     }
 
 }
@@ -370,6 +387,21 @@ void MNE::run()
         calcFiffInfo();
         msleep(10);// Wait for fiff Info
     }
+
+
+
+//    qDebug() << "m_pClusteredFwd->info.ch_names" << m_pClusteredFwd->info.ch_names;
+//    qDebug() << "m_pFiffInfo->ch_names" << m_pFiffInfo->ch_names;
+
+    // ########### ToDo: Dirty Hack to align channel names ############
+    QStringList new_ch_names;
+    for(qint32 x = 0; x < 306; ++x)
+    {
+        m_pClusteredFwd->info.chs[x].ch_name = m_pFiffInfo->chs[x].ch_name;
+        new_ch_names << m_pClusteredFwd->info.chs[x].ch_name;
+    }
+    m_pClusteredFwd->info.ch_names = new_ch_names;
+    // ############ Dirty Hack End ############
 
     //
     // Init Real-Time inverse estimator

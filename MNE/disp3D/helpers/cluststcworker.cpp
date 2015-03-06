@@ -108,10 +108,11 @@ void ClustStcWorker::clear()
 
 void ClustStcWorker::run()
 {
-    VectorXd m_vecAverage(0,0);
+    VectorXd m_vecAverage;
 
     m_bIsRunning = true;
 
+    qDebug() << "Run worker";
     while(true)
     {
         {

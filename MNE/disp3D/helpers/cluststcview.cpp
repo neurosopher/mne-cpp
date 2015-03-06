@@ -105,12 +105,18 @@ void ClustStcView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bo
     if(topLeft.column() > 3 || bottomRight.column() < 3)
         return;
 
+    QList <qint32> debugList_iVal;
+
     for(qint32 i = 0; i < m_pSceneNode->palette()->size(); ++i)
     {
         //ToDo label id check -> necessary?
         //qint32 colorIdx = m_qListMapLabelIdIndex[h][labelId];
+        VectorXd valVec = m_pModel->data(i,3).value<VectorXd>();
+        qint32 iVal = 0;
+        if(valVec.size() > 0)
+            iVal = valVec.maxCoeff() * 255;
 
-        qint32 iVal = m_pModel->data(i,3).value<VectorXd>().maxCoeff() * 255;
+        debugList_iVal << iVal;
 
         iVal = iVal > 255 ? 255 : iVal < 0 ? 0 : iVal;
 
@@ -121,6 +127,8 @@ void ClustStcView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bo
 
         m_pSceneNode->palette()->material(i)->setSpecularColor(QColor(qRgb));
     }
+
+//    qDebug() << "iVals:" << debugList_iVal;
 
     this->update();
 
