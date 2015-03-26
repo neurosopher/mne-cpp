@@ -236,7 +236,7 @@ void ClustStcModel::addData(const MNESourceEstimate &stc)
 {
     qDebug() << "addData sourceEstimate" << stc.data.rows() << " x " << stc.data.cols();
 
-    if(!m_bModelInit || stc.isEmpty() || stc.data.rows() == 0 || stc.data.cols() == 0)
+    if(!m_bModelInit || stc.data.rows() == 0 || stc.data.cols() == 0)
         return;
 
     if(m_vertLabelIds.size() != stc.data.rows())

@@ -142,8 +142,8 @@ bool RtCov::stop()
 void RtCov::run()
 {
     //SETUP
-    QStringList exclude;
-    exclude << "STI101" << "STI201" << "STI301";
+//    QStringList exclude;
+//    exclude << "STI101" << "STI201" << "STI301";
     bool doProj = true;
 
     quint32 n_samples = 0;

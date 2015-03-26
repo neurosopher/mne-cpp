@@ -156,16 +156,60 @@ void MNE::calcFiffInfo()
 //        qDebug() << "m_pFiffInfoForward->ch_names" << m_pFiffInfoForward->ch_names;
 //        qDebug() << "m_pFiffInfoEvoked->ch_names" << m_pFiffInfoEvoked->ch_names;
 
-        // ########### ToDo: Dirty Hack to align channel names ############
-        QStringList new_ch_names;
-        for(qint32 x = 0; x < 306; ++x)
-        {
-            m_pFiffInfoForward->chs[x].ch_name = m_pFiffInfoEvoked->chs[x].ch_name;
-            new_ch_names << m_pFiffInfoEvoked->chs[x].ch_name;
-        }
-        m_pFiffInfoForward->ch_names = new_ch_names;
-        // ############ Dirty Hack End ############
+        // Align channel names of the forward solution to the incoming averaged (currently acquired) data
+        // Find out whether the forward solution depends on only MEG, EEG or both MEG and EEG channels
+        QStringList forwardChannelsTypes;
+        m_pFiffInfoForward->ch_names.clear();
+        int counter = 0;
 
+        for(qint32 x = 0; x < m_pFiffInfoForward->chs.size(); ++x) {
+            if(forwardChannelsTypes.contains("MEG") && forwardChannelsTypes.contains("EEG"))
+                break;
+
+            if(m_pFiffInfoForward->chs[x].kind == FIFFV_MEG_CH && !forwardChannelsTypes.contains("MEG"))
+                forwardChannelsTypes<<"MEG";
+
+            if(m_pFiffInfoForward->chs[x].kind == FIFFV_EEG_CH && !forwardChannelsTypes.contains("EEG"))
+                forwardChannelsTypes<<"EEG";
+        }
+
+        //If only MEG channels are used
+        if(forwardChannelsTypes.contains("MEG") && !forwardChannelsTypes.contains("EEG")) {
+            for(qint32 x = 0; x < m_pFiffInfoEvoked->chs.size(); ++x)
+            {
+                if(m_pFiffInfoForward->chs[x].kind == FIFFV_MEG_CH) {
+                    m_pFiffInfoForward->chs[counter].ch_name = m_pFiffInfoEvoked->chs[x].ch_name;
+                    m_pFiffInfoEvoked->chs[x].ch_name << m_pFiffInfoEvoked->chs[x].ch_name;
+                    counter++;
+                }
+            }
+        }
+
+        //If only EEG channels are used
+        if(!forwardChannelsTypes.contains("MEG") && forwardChannelsTypes.contains("EEG")) {
+            for(qint32 x = 0; x < m_pFiffInfoEvoked->chs.size(); ++x)
+            {
+                if(m_pFiffInfoForward->chs[x].kind == FIFFV_EEG_CH) {
+                    m_pFiffInfoForward->chs[counter].ch_name = m_pFiffInfoEvoked->chs[x].ch_name;
+                    m_pFiffInfoEvoked->chs[x].ch_name << m_pFiffInfoEvoked->chs[x].ch_name;
+                    counter++;
+                }
+            }
+        }
+
+        //If both MEG and EEG channels are used
+        if(forwardChannelsTypes.contains("MEG") && forwardChannelsTypes.contains("EEG")) {
+            for(qint32 x = 0; x < m_pFiffInfoEvoked->chs.size(); ++x)
+            {
+                if(m_pFiffInfoForward->chs[x].kind == FIFFV_MEG_CH || m_pFiffInfoForward->chs[x].kind == FIFFV_EEG_CH) {
+                    m_pFiffInfoForward->chs[counter].ch_name = m_pFiffInfoEvoked->chs[x].ch_name;
+                    m_pFiffInfoEvoked->chs[x].ch_name << m_pFiffInfoEvoked->chs[x].ch_name;
+                    counter++;
+                }
+            }
+        }
+
+        //Pick only channels which are present in all data structures (covariance, evoked and forward)
         QStringList tmp_pick_ch_names;
         foreach (const QString &ch, m_pFiffInfoForward->ch_names)
         {

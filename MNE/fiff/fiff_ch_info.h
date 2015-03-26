@@ -121,7 +121,7 @@ public:
 public:
     fiff_int_t    scanno;       /**< Scanning order number 1*/
     fiff_int_t    logno;        /**< Logical channel # 1*/
-    fiff_int_t    kind;         /**< Kind of channel 1*/
+    fiff_int_t    kind;         /**< Kind of channel. Channel types. default 1*/
     fiff_float_t  range;        /**< Voltmeter range (-1 = auto ranging) 1*/
     fiff_float_t  cal;          /**< Calibration from volts to units used 1*/
 
